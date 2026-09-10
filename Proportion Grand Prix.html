@@ -2076,7 +2076,15 @@ function updateProg(K, init){
     if (d < -N/2) d += N;
     if (Math.abs(d) <= 25){
       if (K.lastIdx > ni && d > 0) K.lap++;        /* crossed the line forwards */
-      else if (K.lastIdx < ni && d < 0) K.lap--;   /* genuinely reversed over it */
+      else if (K.lastIdx < ni && d < 0){
+        /* A bump or item spin can nudge an AI's nearest sample backwards for
+           a frame. AI karts have no reverse input, so do not make them lose a
+           lap during that recovery; a human kart still needs a real reverse
+           heading before its lap count can move back. */
+        const s0 = T.S[K.lastIdx];
+        const headingDot = s0 ? Math.cos(K.ang)*s0.tx + Math.sin(K.ang)*s0.ty : 1;
+        if (!K.ai && headingDot < -0.2) K.lap--;
+      }
     }
   }
   if (!init && K.mine && K.lap > (K.seenLap||0) && K.lap > 0 && K.lap < G.laps){
