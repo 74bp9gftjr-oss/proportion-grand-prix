@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: proportion-grand-prix
+    runtime: python
+    plan: free
+    buildCommand: "true"
+    startCommand: "python3 race_server.py"
+    healthCheckPath: /api/ping
+    autoDeploy: true
